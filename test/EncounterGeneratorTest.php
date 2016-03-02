@@ -31,29 +31,32 @@ class EncounterGeneratorTest extends PHPUnit_Framework_TestCase {
         ],
     ];
 
+    private $encounterGenerator = null;
+
+    public function __construct() {
+        $this->encounterGenerator = new EncounterGenerator($this->pokemonRepartition);
+    }
+
     /**
-     * Vérifie que le ratio des pokémons de chaque groupe par rapport à
-     * celui d'un étalon (un pokémon de coefficient de fréquence 1) soit bon.
+     * Vérifie que le taux de recontre des pokémons de chaque groupe par rapport
+     * à celui d'un étalon (un pokémon de coefficient de fréquence 1) soit bon.
      */
     public function testEncounterProportion() {
 
         $encounters = $this->simulateEncounters();
 
-        // Taux de différence autorisé dans les proportions par rapport à celles demandées.
-        $DELTA_PERCENT = 5;
-
-        // Récupère le ratio du pokémon le plus rare pour le comparer avec celui
-        // des autres groupes.
-        $rarestId = current($this->pokemonRepartition[self::NEAR_IMPOSSIBLE_FACTOR]);
-        $rarestRatio = $encounters[$rarestId]['ratio'];
+        // Taux de différence autorisé par rapport aux proportions attendues.
+        $DELTA = 0.01;
 
         foreach (array_keys($this->pokemonRepartition) as $frequencyFactor) {
             foreach ($this->pokemonRepartition[$frequencyFactor] as $pokemonId) {
+
+                $expectedRate = $this->encounterGenerator->getEncounterRate($pokemonId);
                 $this->assertEquals(
-                    $encounters[$pokemonId]['ratio'],
-                    $rarestRatio * $frequencyFactor,
+                    $encounters[$pokemonId]['encounterRate'],
+                    $expectedRate,
                     '',
-                    $DELTA_PERCENT / 100 * ($rarestRatio * $frequencyFactor)
+                    $DELTA * $expectedRate
                 );
             }
         }
@@ -68,15 +71,13 @@ class EncounterGeneratorTest extends PHPUnit_Framework_TestCase {
         $INITIAL_POST_MAX_ID = 100000;
         $NUMBER_OF_POST_TO_TEST = 100000;
 
-        $encounterGenerator = new EncounterGenerator($this->pokemonRepartition);
-
         // Tente $NUMBER_OF_POST_TO_TEST rencontres et stocke les résultats.
         $encounters = [];
         $encounterCount = 0;
 
         $firstPostId = mt_rand($INITIAL_POST_MIN_ID, $INITIAL_POST_MAX_ID);
         for ($postId = $firstPostId; $postId < ($firstPostId + $NUMBER_OF_POST_TO_TEST); $postId++) {
-            $pokemonId = $encounterGenerator->getEncounterForPost($postId);
+            $pokemonId = $this->encounterGenerator->getEncounterForPost($postId);
 
             $encounterCount++;
 
@@ -92,9 +93,9 @@ class EncounterGeneratorTest extends PHPUnit_Framework_TestCase {
             $encounters[$pokemonId]['count']++;
         }
 
-        // Calcule le ratio de recontre de chaque pokémon rencontré.
+        // Calcule le taux de recontre de rencontre de chaque pokémon rencontré.
         foreach ($encounters as $pokemonId => &$currentEncounter) {
-            $currentEncounter['ratio'] = $currentEncounter['count'] / $encounterCount;
+            $currentEncounter['encounterRate'] = $currentEncounter['count'] / $encounterCount;
         }
         unset($currentEncounter);
 
