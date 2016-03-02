@@ -1,6 +1,6 @@
 <?php
 
-class TestEncounterGenerator extends PHPUnit_Framework_TestCase {
+class EncounterGeneratorTest extends PHPUnit_Framework_TestCase {
 
     const NEAR_IMPOSSIBLE_FACTOR = 1;
     const LEGENDARY_FACTOR = 2;
