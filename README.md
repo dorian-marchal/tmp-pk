@@ -2,13 +2,19 @@
 
 ## Dependencies
 
+#### Dev
 - Composer
 - PhpUnit
+- PHP Code Sniffer
 
 ## Installation
 
-Run `make install` from the project root.
+Clone the repo and execute `make install`.
 
 ## Tests
 
-Run `make test` from the project root.
+Run `make test`.
+
+## Linting
+
+Run `make lint`.
