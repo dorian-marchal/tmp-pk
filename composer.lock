@@ -4,9 +4,10 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b05dbf0c664d2146bfda709c31122f74",
-    "content-hash": "37511f9dc628a4993ee51c9e6d0eaed9",
-    "packages": [
+    "hash": "838258c7abc7545886bdfd1b4e72d0d8",
+    "content-hash": "3639a9f012ea428165448cd6f8e98d10",
+    "packages": [],
+    "packages-dev": [
         {
             "name": "raveren/kint",
             "version": "1.0.10",
@@ -59,7 +60,6 @@
             "time": "2015-09-16 14:09:00"
         }
     ],
-    "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": [],
