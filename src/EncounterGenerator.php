@@ -64,7 +64,6 @@ class EncounterGenerator {
         $this->encounterPossibilities = array_pad($this->encounterPossibilities,
             (int) (count($this->encounterPossibilities) / $this->expectedEncounterRate), null);
 
-        $this->padEncounterPossibilitiesToPowerOfTwoElements();
     }
 
     /**
@@ -75,60 +74,18 @@ class EncounterGenerator {
     }
 
     /**
-     * Ajoute des éléments nulls à la liste des rencontres potentielles jusqu'à
-     * ce qu'elle fasse une taille de 2^x éléments.
-     */
-    private function padEncounterPossibilitiesToPowerOfTwoElements() {
-        $closestPowerOfTwo = self::closestPowerOfTwo(count($this->encounterPossibilities));
-        $this->encounterPossibilities = array_pad(
-            $this->encounterPossibilities, $closestPowerOfTwo, null
-        );
-    }
-
-    /**
-     * Retourne 2^n avec n valant la plus petite valeur entière qui vérifie
-     * 2^n >= $number.
-     */
-    private static function closestPowerOfTwo($number) {
-        return pow(2, ceil(log($number, 2)));
-    }
-
-    /**
      * Retourne le pokémon rencontré pour un ID de post particulier.
      * @return string ID du pokémon rencontré ou null s'il n'y a pas de
      *         rencontre pour cet ID.
-     * @throws \Exception si la taille du tableau des rencontre potentielles
-     *         n'est pas une puissance de deux.
      */
     public function getEncounterForPost($postId) {
-        if (!self::isPowerOfTwo(count($this->encounterPossibilities))) {
-            throw new \Exception(
-                'count($this->encounterPossibilities) must be a power of two.'
-            );
-        }
-
-        $encounterIndex = $this->getEncounterIndexForPost($postId);
+        // On divise l'ID du post par 8 pour résoudre les problèmes liés au fait
+        // que l'écart minimum entre deux ID de message d'un même topic est de 8
+        // sur les forums de jeuxvideo.com.
+        $dividedId = floor($postId / 8);
+        $encounterIndex = $dividedId % count($this->encounterPossibilities);
 
         return $this->encounterPossibilities[$encounterIndex];
-    }
-
-    private static function isPowerOfTwo($number) {
-        return !($number & ($number - 1));
-    }
-
-    /**
-     * @param int $postId
-     * @return int
-     */
-    private function getEncounterIndexForPost($postId) {
-        // Élimine les trois derniers bits de l'ID du post.
-        // Résout les problèmes liés au fait que l'écart minimum entre deux ID
-        // de message d'un même topic est de 8 sur les forums de jeuxvideo.com.
-        $postBits = $postId >> 3;
-        $mask = (1 << log(count($this->encounterPossibilities), 2)) - 1;
-        $index = $postBits & $mask;
-
-        return $index;
     }
 
     /**
