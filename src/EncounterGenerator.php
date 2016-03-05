@@ -8,21 +8,19 @@ class EncounterGenerator {
 
     private $pokemonRepartitionList = [];
     private $encounterPossibilities = [];
+    /**
+     * @var float Probabilité de rencontrer n'importe quel pokémon à chaque
+     *      post (entre 0 et 1). Ce taux est approximatif. Les calculs peuvent
+     *      faire varier légérement le taux réel.
+     */
+    private $expectedEncounterRate = 1;
 
     /**
-     * @param array $pokemonRepartitionList Liste des différents id de pokémons
-     * classés par coefficient de fréquence, de la forme :
-     * [
-     *     1 => ['Mew', 'Mewtwo'], // coefficient 1, les plus rares
-     *     4 => ['Pikachu'], // 4 fois plus fréquents que ceux du dessus
-     *     10 => ['Rattata', 'Roucool', 'Chenipan'], // 10 fois plus fréquents que ceux du dessus
-     * ]
-     *
-     * Les coefficients doivent être des entiers positifs.
+     * Met à jour les données du générateur en fonction des attributs courants.
+     * Cette méthode doit être appelée après la modification d'un attribut
+     * pour que celui-ci soit pris en compte.
      */
-    public function __construct($pokemonRepartitionList = []) {
-        $this->checkRepartitionList($pokemonRepartitionList);
-        $this->pokemonRepartitionList = $pokemonRepartitionList;
+    public function update() {
         $this->generateEncounterPossibilities();
         $this->pokemonShuffle();
     }
@@ -49,6 +47,10 @@ class EncounterGenerator {
     private function generateEncounterPossibilities() {
         $this->encounterPossibilities = [];
 
+        if ($this->expectedEncounterRate === 0) {
+            return;
+        }
+
         foreach ($this->pokemonRepartitionList as $frequencyFactor => $pokemonIds) {
             foreach ($pokemonIds as $pokemonId) {
                 for ($i = 0; $i < $frequencyFactor; $i++) {
@@ -56,6 +58,11 @@ class EncounterGenerator {
                 }
             }
         }
+
+        // Ajoute des éléments null à la liste de rencontre pour réduire le
+        // taux de rencontre à $expectedEncounterRate.
+        $this->encounterPossibilities = array_pad($this->encounterPossibilities,
+            (int) (count($this->encounterPossibilities) / $this->expectedEncounterRate), null);
 
         $this->padEncounterPossibilitiesToPowerOfTwoElements();
     }
@@ -83,7 +90,7 @@ class EncounterGenerator {
      * 2^n >= $number.
      */
     private static function closestPowerOfTwo($number) {
-        return pow(2, ceil(log($number) / log(2)));
+        return pow(2, ceil(log($number, 2)));
     }
 
     /**
@@ -100,13 +107,9 @@ class EncounterGenerator {
             );
         }
 
-        // Élimine les trois derniers bits de l'ID du post.
-        // Résout les problèmes liés au fait que l'écart minimum entre deux ID
-        // de messages d'un même topic est de 8 sur les forums de jeuxvideo.com.
-        $bits = $postId >> 3;
-        $index = $bits & (1 << log(count($this->encounterPossibilities), 2)) - 1;
+        $encounterIndex = $this->getEncounterIndexForPost($postId);
 
-        return $this->encounterPossibilities[$index];
+        return $this->encounterPossibilities[$encounterIndex];
     }
 
     private static function isPowerOfTwo($number) {
@@ -114,22 +117,111 @@ class EncounterGenerator {
     }
 
     /**
+     * @param int $postId
+     * @return int
+     */
+    private function getEncounterIndexForPost($postId) {
+        // Élimine les trois derniers bits de l'ID du post.
+        // Résout les problèmes liés au fait que l'écart minimum entre deux ID
+        // de message d'un même topic est de 8 sur les forums de jeuxvideo.com.
+        $postBits = $postId >> 3;
+        $mask = (1 << log(count($this->encounterPossibilities), 2)) - 1;
+        $index = $postBits & $mask;
+
+        return $index;
+    }
+
+    /**
      * Retourne le taux de rencontre du pokémon d'id passé en paramètre.
      *
      * @param string $pokemonId
-     * @return float Taux de rencontre entre 0 et 1.
+     * @return float Probabilité de rencontrer le Pokémon d'ID passé en paramètre
+     *         À chaque post, entre 0 et 1.
      */
-    public function getEncounterRate($pokemonId) {
+    public function getPokemonEncounterRate($pokemonId) {
+        $pokemonRatio = $this->getPokemonRatio($pokemonId);
+        return $pokemonRatio * $this->getActualEncounterRate();
+    }
 
-        $pokemonCount = count($this->encounterPossibilities);
-        // On retire les éléments null pour pouvoir utiliser array_count_values.
-        $pokemonOccurenceList = array_count_values(array_filter($this->encounterPossibilities));
+    /**
+     * Retourne la proportion du Pokémon d'ID passé en paramètre par rapport
+     * à la masse totale de tous les Pokémons.
+     * @param string $pokemonId
+     * @return float
+     */
+    public function getPokemonRatio($pokemonId) {
+        $pokemonCount = $this->getPokemonCount();
 
-        $rate = 0;
-        if (isset($pokemonOccurenceList[$pokemonId]) && $pokemonCount > 0) {
-            $rate = $pokemonOccurenceList[$pokemonId] / $pokemonCount;
+        if ($pokemonCount > 0) {
+            $numberOfOccurences = $this->getNumberOfOccurences($pokemonId);
+            return $numberOfOccurences / $pokemonCount;
+        }
+        return 0;
+    }
+
+    /**
+     * @return int Retourne le nombre total de pokémons dans la liste des
+     * possibilités de rencontre.
+     */
+    private function getPokemonCount() {
+        return count(array_filter($this->encounterPossibilities));
+    }
+
+    /**
+     * @return int Nombre d'occurences d'un Pokémon dans la liste des rencontres
+     * potentielles.
+     */
+    private function getNumberOfOccurences($pokemonId) {
+
+        $incrementNumberOfOccurences = function ($occurences, $possibility) use ($pokemonId) {
+            if ($possibility === $pokemonId) {
+                $occurences++;
+            }
+            return $occurences;
+        };
+
+        return array_reduce($this->encounterPossibilities, $incrementNumberOfOccurences, 0);
+    }
+
+    /**
+     * Modifie la liste de répartition des pokémons.
+     *
+     * @param array $pokemonRepartitionList Liste des différents id de pokémons
+     * classés par coefficient de fréquence, de la forme :
+     * [
+     *     1 => ['Mew', 'Mewtwo'], // coefficient 1, les plus rares
+     *     4 => ['Pikachu'], // 4 fois plus fréquents que ceux du dessus
+     *     10 => ['Rattata', 'Roucool'], // 10 fois plus fréquents que ceux du dessus
+     * ]
+     * Les coefficients doivent être des entiers positifs.
+     *
+     * @throws \Exception si la liste passée est mal formée.
+     */
+    public function setPokemonRepartitionList($pokemonRepartitionList) {
+        $this->checkRepartitionList($pokemonRepartitionList);
+        $this->pokemonRepartitionList = $pokemonRepartitionList;
+    }
+
+    public function getExpectedEncounterRate() {
+        return $this->expectedEncounterRate;
+    }
+
+    public function setExpectedEncounterRate($expectedEncounterRate) {
+        $this->expectedEncounterRate = $expectedEncounterRate;
+    }
+
+    /**
+     * Retourne le taux de rencontre réél, basé sur les données utilisées pour
+     * les calculs. Ce taux peut être légérement différent d'$expectedEncounterRate.
+     * @return float
+     */
+    public function getActualEncounterRate() {
+        $encounterPossibilityCount = count($this->encounterPossibilities);
+
+        if ($encounterPossibilityCount > 0) {
+            return $this->getPokemonCount() / count($this->encounterPossibilities);
         }
 
-        return $rate;
+        return 0;
     }
 }
