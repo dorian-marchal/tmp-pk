@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Vérifie que les tests passent.
+
+make test
+
+RESULT=$?
+
+exit $RESULT
