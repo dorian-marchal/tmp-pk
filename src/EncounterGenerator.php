@@ -10,10 +10,9 @@ class EncounterGenerator {
     private $encounterPossibilities = [];
     /**
      * @var float Probabilité de rencontrer n'importe quel pokémon à chaque
-     *      post (entre 0 et 1). Ce taux est approximatif. Les calculs peuvent
-     *      faire varier légérement le taux réel.
+     *      post (entre 0 et 1).
      */
-    private $expectedEncounterRate = 1;
+    private $encounterRate = 1;
 
     /**
      * Met à jour les données du générateur en fonction des attributs courants.
@@ -47,7 +46,7 @@ class EncounterGenerator {
     private function generateEncounterPossibilities() {
         $this->encounterPossibilities = [];
 
-        if ($this->expectedEncounterRate === 0) {
+        if ($this->encounterRate === 0) {
             return;
         }
 
@@ -60,11 +59,10 @@ class EncounterGenerator {
         }
 
         // Ajoute des éléments null à la liste de rencontre pour réduire le
-        // taux de rencontre à $expectedEncounterRate.
+        // taux de rencontre à $encounterRate.
         $this->encounterPossibilities = array_pad($this->encounterPossibilities,
-            (int) (count($this->encounterPossibilities) / $this->expectedEncounterRate), null);
+            (int) (count($this->encounterPossibilities) / $this->encounterRate), null);
 
-        $this->padEncounterPossibilitiesToPowerOfTwoElements();
     }
 
     /**
@@ -75,60 +73,18 @@ class EncounterGenerator {
     }
 
     /**
-     * Ajoute des éléments nulls à la liste des rencontres potentielles jusqu'à
-     * ce qu'elle fasse une taille de 2^x éléments.
-     */
-    private function padEncounterPossibilitiesToPowerOfTwoElements() {
-        $closestPowerOfTwo = self::closestPowerOfTwo(count($this->encounterPossibilities));
-        $this->encounterPossibilities = array_pad(
-            $this->encounterPossibilities, $closestPowerOfTwo, null
-        );
-    }
-
-    /**
-     * Retourne 2^n avec n valant la plus petite valeur entière qui vérifie
-     * 2^n >= $number.
-     */
-    private static function closestPowerOfTwo($number) {
-        return pow(2, ceil(log($number, 2)));
-    }
-
-    /**
      * Retourne le pokémon rencontré pour un ID de post particulier.
      * @return string ID du pokémon rencontré ou null s'il n'y a pas de
      *         rencontre pour cet ID.
-     * @throws \Exception si la taille du tableau des rencontre potentielles
-     *         n'est pas une puissance de deux.
      */
     public function getEncounterForPost($postId) {
-        if (!self::isPowerOfTwo(count($this->encounterPossibilities))) {
-            throw new \Exception(
-                'count($this->encounterPossibilities) must be a power of two.'
-            );
-        }
-
-        $encounterIndex = $this->getEncounterIndexForPost($postId);
+        // On divise l'ID du post par 8 pour résoudre les problèmes liés au fait
+        // que l'écart minimum entre deux ID de message d'un même topic est de 8
+        // sur les forums de jeuxvideo.com.
+        $dividedId = floor($postId / 8);
+        $encounterIndex = $dividedId % count($this->encounterPossibilities);
 
         return $this->encounterPossibilities[$encounterIndex];
-    }
-
-    private static function isPowerOfTwo($number) {
-        return !($number & ($number - 1));
-    }
-
-    /**
-     * @param int $postId
-     * @return int
-     */
-    private function getEncounterIndexForPost($postId) {
-        // Élimine les trois derniers bits de l'ID du post.
-        // Résout les problèmes liés au fait que l'écart minimum entre deux ID
-        // de message d'un même topic est de 8 sur les forums de jeuxvideo.com.
-        $postBits = $postId >> 3;
-        $mask = (1 << log(count($this->encounterPossibilities), 2)) - 1;
-        $index = $postBits & $mask;
-
-        return $index;
     }
 
     /**
@@ -140,7 +96,7 @@ class EncounterGenerator {
      */
     public function getPokemonEncounterRate($pokemonId) {
         $pokemonRatio = $this->getPokemonRatio($pokemonId);
-        return $pokemonRatio * $this->getActualEncounterRate();
+        return $pokemonRatio * $this->encounterRate;
     }
 
     /**
@@ -202,26 +158,15 @@ class EncounterGenerator {
         $this->pokemonRepartitionList = $pokemonRepartitionList;
     }
 
-    public function getExpectedEncounterRate() {
-        return $this->expectedEncounterRate;
-    }
-
-    public function setExpectedEncounterRate($expectedEncounterRate) {
-        $this->expectedEncounterRate = $expectedEncounterRate;
+    public function getEncounterRate() {
+        return $this->encounterRate;
     }
 
     /**
-     * Retourne le taux de rencontre réél, basé sur les données utilisées pour
-     * les calculs. Ce taux peut être légérement différent d'$expectedEncounterRate.
-     * @return float
+     * Set le taux de rencontre. Le taux passé est contraint sur [0, 1].
+     * @param int $encounterRate
      */
-    public function getActualEncounterRate() {
-        $encounterPossibilityCount = count($this->encounterPossibilities);
-
-        if ($encounterPossibilityCount > 0) {
-            return $this->getPokemonCount() / count($this->encounterPossibilities);
-        }
-
-        return 0;
+    public function setEncounterRate($encounterRate) {
+        $this->encounterRate = max(min($encounterRate, 1), 0);
     }
 }
