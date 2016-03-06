@@ -16,7 +16,6 @@
     - lien en haut à droite des forums
 - [ ] Warning beta dans le topic
 - [ ] Trouver un nom au script
-- [ ] Le distribuer sur le 15-18, seulement
 
 # v0.2
 - [ ] Authentification
@@ -40,6 +39,9 @@
 
 # Général
 - [ ] Trouver un meilleur nom (court, facile à chercher sur Google)
+- [ ] Ajouter des tests
+    - mapping rencontres / captures
+    - simuler le nombre de posts moyen pour remplir le pokédex
 
 # Technique
 
@@ -75,6 +77,8 @@
 ### Echanges
 - Par MP -> Demande d'échange -> acceptation
 - Possibilité d'obtenir plusieurs fois le même pokémon
+- Interface d'échange dans un topic en particulier ?
+- Possibilité de bloquer les échanges pour éviter les abus ?
 
 ### Rencontre
 - Définir un taux de rencontre pour chaque pokémon
@@ -92,9 +96,15 @@
     - Le mettre dans un Objet JSON serializable
 
 ### Capture
+- Objet "pokémon" contenant le taux de rencontre et de capture ?
 - Vérifier la rencontre côté serveur
     - Choisir une URL légère à récupérer.
 - Taux de capture pour les différents Pokémon
+    - Fixe + variable, du type `min(1, 0.4 + (0.06 * frequencyFactor))``
+      frequencyFactor:1 -> 0.46
+      frequencyFactor:4 -> 0.64
+      frequencyFactor:8 -> 0.88
+      frequencyFactor:12 -> 1
 - Coût des pokéballs pour éviter des Pokémons faciles à capturer
 - Random côté serveur
 
@@ -120,6 +130,7 @@ __Idées__
 ## Améliorations
 - Pokédex rempli = événement spécial -> Faire un topic au nom du premier ?
 - Shinys
+- Générer des signatures, Avatars, etc pour faire connaître le jeu
 - Echange (anticiper les soucis)
 - Légendaires : récupération particulière ? animation spécifique ?
 - Site web
