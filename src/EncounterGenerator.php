@@ -134,6 +134,15 @@ class EncounterGenerator {
     }
 
     /**
+     * Retourne le nombre de posts consécutifs minimum pour que tous les
+     * pokémons soient rencontrés au moins une fois.
+     * @return int
+     */
+    public function getCycleLength() {
+        return count($this->encounterPossibilities) * self::MIN_GAP_BETWEEN_POST_IDS;
+    }
+
+    /**
      * Retourne la proportion du Pokémon d'ID passé en paramètre par rapport
      * à la masse totale de tous les Pokémons.
      * @param string $pokemonId
