@@ -97,18 +97,13 @@ class EncounterGeneratorTest extends PHPUnit_Framework_TestCase {
     public function testEncounterProportion() {
         $encounters = $this->simulateEncounters();
 
-        // Taux de différence autorisé par rapport aux proportions attendues.
-        $DELTA = 0.01;
-
         foreach (array_keys($this->pokemonRepartition) as $frequencyFactor) {
             foreach ($this->pokemonRepartition[$frequencyFactor] as $pokemonId) {
 
                 $expectedRate = $this->generator->getPokemonEncounterRate($pokemonId);
                 $this->assertEquals(
                     $expectedRate,
-                    $encounters[$pokemonId]['encounterRate'],
-                    '',
-                    $DELTA * $expectedRate
+                    $encounters[$pokemonId]['encounterRate']
                 );
             }
         }
@@ -118,17 +113,13 @@ class EncounterGeneratorTest extends PHPUnit_Framework_TestCase {
      * Simule un grand nombre de rencontres et retourne le résultat.
      */
     private function simulateEncounters() {
-
-        $INITIAL_POST_MIN_ID = 0;
-        $INITIAL_POST_MAX_ID = 100000;
-        $NUMBER_OF_POST_TO_TEST = 100000;
+        $NUMBER_OF_POST_TO_TEST = $this->generator->getCycleLength() * 2;
 
         // Tente $NUMBER_OF_POST_TO_TEST rencontres et stocke les résultats.
         $encounters = [];
         $encounterCount = 0;
 
-        $firstPostId = mt_rand($INITIAL_POST_MIN_ID, $INITIAL_POST_MAX_ID);
-        for ($postId = $firstPostId; $postId < ($firstPostId + $NUMBER_OF_POST_TO_TEST); $postId++) {
+        for ($postId = 0; $postId < $NUMBER_OF_POST_TO_TEST; $postId++) {
             $pokemonId = $this->generator->getEncounterForPost($postId);
 
             $encounterCount++;
