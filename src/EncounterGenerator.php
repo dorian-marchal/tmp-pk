@@ -14,6 +14,12 @@ class EncounterGenerator {
      */
     private $encounterRate = 1;
 
+    public function __construct($pokemonRepartitionList, $encounterRate) {
+        $this->setPokemonRepartitionList($pokemonRepartitionList);
+        $this->setEncounterRate($encounterRate);
+        $this->update();
+    }
+
     /**
      * Met à jour les données du générateur en fonction des attributs courants.
      * Cette méthode doit être appelée après la modification d'un attribut
