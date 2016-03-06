@@ -94,8 +94,7 @@ class EncounterGeneratorTest extends PHPUnit_Framework_TestCase {
      * Vérifie que le taux de rencontre des pokémons de chaque groupe par rapport
      * à celui d'un étalon (un pokémon de coefficient de fréquence 1) soit bon.
      */
-    public function tesstEncounterProportion() {
-
+    public function testEncounterProportion() {
         $encounters = $this->simulateEncounters();
 
         // Taux de différence autorisé par rapport aux proportions attendues.
