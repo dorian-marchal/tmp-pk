@@ -10,6 +10,7 @@ class EncounterGenerator {
 
     private $pokemonRepartitionList = [];
     private $encounterPossibilities = [];
+
     /**
      * @var float Probabilité de rencontrer n'importe quel pokémon à chaque
      *      post (entre 0 et 1).
@@ -171,7 +172,6 @@ class EncounterGenerator {
      * potentielles.
      */
     private function getNumberOfOccurences($pokemonId) {
-
         $incrementNumberOfOccurences = function ($occurences, $possibility) use ($pokemonId) {
             if ($possibility === $pokemonId) {
                 $occurences++;

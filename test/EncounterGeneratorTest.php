@@ -52,7 +52,6 @@ class EncounterGeneratorTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testGetPokemonRatio() {
-
         // Compte le nombre de pokémons pour calculer le ratio manuellement.
         $pokemonCount = 0;
         foreach ($this->pokemonRepartition as $frequencyFactor => $pokemonIds) {
