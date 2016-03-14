@@ -1,0 +1,18 @@
+{
+  "name": "Tmp PK",
+  "version": "0.1.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dorian-marchal/tmp-pk.git"
+  },
+  "author": "dorian-marchal",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dorian-marchal/tmp-pk/issues"
+  },
+  "homepage": "https://github.com/dorian-marchal/tmp-pk#readme"
+}
