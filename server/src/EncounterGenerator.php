@@ -19,11 +19,11 @@ class EncounterGenerator {
      * @var float Probabilité de rencontrer n'importe quel pokémon à chaque
      *      post (entre 0 et 1).
      */
-    private $encounterRate = 1;
+    private $wantedEncounterRate = 1;
 
-    public function __construct($pokemonRepartitionList, $encounterRate) {
+    public function __construct($pokemonRepartitionList, $wantedEncounterRate) {
         $this->setPokemonRepartitionList($pokemonRepartitionList);
-        $this->setEncounterRate($encounterRate);
+        $this->setWantedEncounterRate($wantedEncounterRate);
         $this->update();
     }
 
@@ -64,14 +64,26 @@ class EncounterGenerator {
 
     /**
      * Set le taux de rencontre. Le taux passé est contraint sur [0, 1].
-     * @param int $encounterRate
+     * Ce taux est approximatif. Pour obtenir le taux de rencontre effectif, il
+     * faut appeler la méthode `getActualEncounterRate`.
+     * @param int $wantedEncounterRate
      */
-    public function setEncounterRate($encounterRate) {
-        $this->encounterRate = max(min($encounterRate, 1), 0);
+    public function setWantedEncounterRate($wantedEncounterRate) {
+        $this->wantedEncounterRate = max(min($wantedEncounterRate, 1), 0);
     }
 
-    public function getEncounterRate() {
-        return $this->encounterRate;
+    /**
+     * @return float
+     */
+    public function getWantedEncounterRate() {
+        return $this->wantedEncounterRate;
+    }
+
+    /**
+     * @return float Taux de rencontre global réel.
+     */
+    public function getActualEncounterRate() {
+        return $this->getPokemonCount() / count($this->encounterPossibilities);
     }
 
     /**
@@ -89,7 +101,7 @@ class EncounterGenerator {
     private function generateEncounterPossibilities() {
         $this->encounterPossibilities = [];
 
-        if ($this->encounterRate === 0) {
+        if ($this->wantedEncounterRate === 0) {
             return;
         }
 
@@ -102,9 +114,9 @@ class EncounterGenerator {
         }
 
         // Ajoute des éléments null à la liste de rencontre pour réduire le
-        // taux de rencontre à $encounterRate.
+        // taux de rencontre à $wantedEncounterRate.
         $this->encounterPossibilities = array_pad($this->encounterPossibilities,
-            (int) (count($this->encounterPossibilities) / $this->encounterRate), null);
+            (int) (count($this->encounterPossibilities) / $this->wantedEncounterRate), null);
 
         // Mélange le tableau de rencontres pour éviter les cycles de rencontre
         // trop visibles.
@@ -135,7 +147,7 @@ class EncounterGenerator {
      */
     public function getPokemonEncounterRate($pokemonId) {
         $pokemonRatio = $this->getPokemonRatio($pokemonId);
-        return $pokemonRatio * $this->encounterRate;
+        return $pokemonRatio * $this->getActualEncounterRate();
     }
 
     /**

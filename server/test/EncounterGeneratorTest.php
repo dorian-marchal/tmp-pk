@@ -49,18 +49,18 @@ class EncounterGeneratorTest extends PHPUnit_Framework_TestCase {
         ]);
     }
 
-    public function testSetEncounterRate() {
+    public function testSetWantedEncounterRate() {
         // Vérifie la limite haute (1).
-        $this->generator->setEncounterRate(2);
-        $this->assertEquals(1, $this->generator->getEncounterRate());
+        $this->generator->setWantedEncounterRate(2);
+        $this->assertEquals(1, $this->generator->getWantedEncounterRate());
 
         // Vérifie la limite basse (0).
-        $this->generator->setEncounterRate(-1);
-        $this->assertEquals(0, $this->generator->getEncounterRate());
+        $this->generator->setWantedEncounterRate(-1);
+        $this->assertEquals(0, $this->generator->getWantedEncounterRate());
 
         // Vérifie la conservation du taux quand il est dans les bornes.
-        $this->generator->setEncounterRate(0.5);
-        $this->assertEquals(0.5, $this->generator->getEncounterRate());
+        $this->generator->setWantedEncounterRate(0.5);
+        $this->assertEquals(0.5, $this->generator->getWantedEncounterRate());
     }
 
     public function testGetPokemonRatio() {
@@ -73,7 +73,7 @@ class EncounterGeneratorTest extends PHPUnit_Framework_TestCase {
         // Vérifie le ratio de chaque Pokémon.
         foreach ($this->pokemonRepartition as $frequencyFactor => $pokemonIds) {
             // Si le taux de rencontre est nul, le ratio est nul, lui-aussi.
-            if ($this->generator->getEncounterRate() === 0) {
+            if ($this->generator->getWantedEncounterRate() === 0) {
                 $expectedRatio = 0;
             } else {
                 $expectedRatio = $frequencyFactor / $pokemonCount;
@@ -94,7 +94,7 @@ class EncounterGeneratorTest extends PHPUnit_Framework_TestCase {
         // Vérifie le taux de rencontre de chaque Pokémon.
         foreach ($this->pokemonRepartition as $frequencyFactor => $pokemonIds) {
             $ratio = $frequencyFactor / $pokemonCount;
-            $expectedRate = $ratio * $this->generator->getEncounterRate();
+            $expectedRate = $ratio * $this->generator->getActualEncounterRate();
             foreach ($pokemonIds as $pokemonId) {
                 $this->assertEquals($expectedRate, $this->generator->getPokemonEncounterRate($pokemonId));
             }
