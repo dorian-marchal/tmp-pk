@@ -34,7 +34,7 @@ class EncounterGeneratorTest extends PHPUnit_Framework_TestCase {
     private $generator = null;
 
     public function __construct() {
-        $this->generator = new EncounterGenerator($this->pokemonRepartition, 0.1);
+        $this->generator = new EncounterGenerator($this->pokemonRepartition, 0.15);
     }
 
     public function testSetPokemonRepartitionListNotArray() {
@@ -102,19 +102,19 @@ class EncounterGeneratorTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * Vérifie que le taux de rencontre des pokémons de chaque groupe par rapport
-     * à celui d'un étalon (un pokémon de coefficient de fréquence 1) soit bon.
+     * Vérifie que le taux de rencontre des pokémons de chaque groupe soit bon.
      */
     public function testEncounterProportion() {
+        $DELTA = 0.0000001;
         $encounters = $this->simulateEncounters();
-
-        foreach (array_keys($this->pokemonRepartition) as $frequencyFactor) {
-            foreach ($this->pokemonRepartition[$frequencyFactor] as $pokemonId) {
-
+        foreach ($this->pokemonRepartition as $frequencyFactor => $pokemonIds) {
+            foreach ($pokemonIds as $pokemonId) {
                 $expectedRate = $this->generator->getPokemonEncounterRate($pokemonId);
                 $this->assertEquals(
                     $expectedRate,
-                    $encounters[$pokemonId]['encounterRate']
+                    $encounters[$pokemonId]['encounterRate'],
+                    '',
+                    $DELTA
                 );
             }
         }
