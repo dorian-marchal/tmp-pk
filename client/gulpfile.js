@@ -7,6 +7,11 @@ gulp.task('lint', function() {
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.failAfterError())
+        .pipe(eslint.results(function(results) {
+            if (results.warningCount > 0) {
+                throw new Error('You must fix eslint warnings');
+            }
+        }))
     ;
 });
 
