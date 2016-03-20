@@ -2,7 +2,7 @@
 
 # Vérifie que les tests passent.
 
-make test
+cd server && make test && make lint && cd ../client && gulp test && gulp lint
 
 RESULT=$?
 
