@@ -3,6 +3,7 @@ var shuffle = require('array-shuffle');
 /**
  * Permet de générer des rencontres de pokémons à partir d'ID de posts sur les
  * forums de jeuxvideo.com.
+ *
  * @param {object} pokemonRepartitionList Liste de répartition des pokémons.
  *        Voir #setPokemonRepartitionList() pour plus d'informations.
  * @param {float} wantedEncounterRate Taux de rencontre global souhaité.
@@ -50,6 +51,7 @@ EncounterGenerator.prototype.setPokemonRepartitionList = function(pokemonReparti
 
 /**
  * Vérifie que la répartition des pokémons est bien formée.
+ *
  * @param {object} pokemonRepartitionList Répartition à vérifier
  * @throws {Error}
  */
@@ -58,6 +60,7 @@ EncounterGenerator.prototype._checkRepartitionList = function(pokemonRepartition
         throw new Error('Repartition list must be an object.');
     }
     for (var frequencyFactor in pokemonRepartitionList) {
+
         // Les coefficients de fréquences sont des chaînes, on les converti en entier.
         var numberFactor = Number(frequencyFactor);
 
@@ -150,6 +153,7 @@ EncounterGenerator.prototype._generateEncounterPossibilities = function() {
  *         rencontre pour cet ID.
  */
 EncounterGenerator.prototype.getEncounterForPost = function(postId) {
+
     // On divise l'ID du post par MIN_GAP_BETWEEN_POST_IDS pour résoudre les
     // problèmes liés au fait que l'écart minimum entre deux ID de message
     // d'un même topic n'est pas de 1 sur les forums de jeuxvideo.com.
@@ -195,7 +199,7 @@ EncounterGenerator.prototype.getPokemonRatio = function(pokemonId) {
 
 /**
  * @return {int} Retourne le nombre total de pokémons dans la liste des
- * possibilités de rencontre.
+ *         possibilités de rencontre.
  */
 EncounterGenerator.prototype._getPokemonCount = function() {
     var nonNullPossibilities = this._encounterPossibilities.filter(function(el) { return el !== null; });
@@ -205,7 +209,7 @@ EncounterGenerator.prototype._getPokemonCount = function() {
 /**
  * @param {string} pokemonId ID du pokémon
  * @return {int} Nombre d'occurences d'un Pokémon dans la liste des rencontres
- * potentielles.
+ *         potentielles.
  */
 EncounterGenerator.prototype._getNumberOfOccurences = function(pokemonId) {
     var countOccurences = function(occurences, currentId) {

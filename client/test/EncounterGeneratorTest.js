@@ -115,6 +115,7 @@ describe('EncounterGenerator', function() {
 
     describe('#getPokemonRatio()', function() {
         it('should get the correct ratio for each pokemon', function() {
+
             // Compte le nombre de pokémons pour calculer le ratio manuellement.
             var pokemonCount = 0;
             _(pokemonRepartition).forEach(function(pokemonIds, frequencyFactor) {
@@ -141,6 +142,7 @@ describe('EncounterGenerator', function() {
 
     describe('#getPokemonEncounterRate()', function() {
         it('should get the right encounter rate for each pokemon', function() {
+
             // Compte le nombre de pokémons pour calculer le taux de rencontre manuellement.
             var pokemonCount = 0;
             _(pokemonRepartition).forEach(function(pokemonIds, frequencyFactor) {
