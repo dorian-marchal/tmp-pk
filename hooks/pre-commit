@@ -2,9 +2,9 @@
 
 # Empêche la faute de frappe "recontre" à la place de "rencontre".
 
-if [ $(grep --exclude-dir={.git,hooks} -nr recontre | wc -l) -gt 0 ]
+if [ $(git diff --cached --name-only --diff-filter=ACM | xargs grep recontre | wc -l) -gt 0 ]
 then
     echo "You're committing a spelling mistake !"
-    grep --color --exclude-dir={.git,hooks} -nr recontre
+    git diff --cached --name-only --diff-filter=ACM | xargs grep --color -Hn recontre
     exit 1
 fi
