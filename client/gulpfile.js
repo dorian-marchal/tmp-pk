@@ -1,12 +1,19 @@
-var gulp = require('gulp');
-var fs = require('fs');
-var path = require('path');
-var mocha = require('gulp-mocha');
+/* eslint-disable no-sync */
+
 var eslint = require('gulp-eslint');
+var fs = require('fs');
+var gulp = require('gulp');
+var mocha = require('gulp-mocha');
+var path = require('path');
 var prepend = require('gulp-insert').prepend;
 var uglify = require('gulp-uglify');
 var webpack = require('webpack-stream');
 var webpackConfig = require('./webpack.config.js');
+
+function readUserscriptHeader() {
+    var userscriptHeaderPath = path.join(__dirname, 'src', 'userscript', 'header.js');
+    return fs.readFileSync(userscriptHeaderPath, 'utf8');
+}
 
 gulp.task('lint', function() {
     return gulp.src(['./*.js', './src/**/*.js', './test/**/*.js'])
@@ -28,16 +35,14 @@ gulp.task('test', function() {
 });
 
 gulp.task('build', function() {
-
-    var userscriptHeaderPath = path.join(__dirname, 'src', 'userscript', 'header.js');
-
-    /* eslint-disable no-sync */
-    var userscriptHeader = fs.readFileSync(userscriptHeaderPath, 'utf8');
-
     return gulp.src(['./src/index.js'])
         .pipe(webpack(webpackConfig))
         .pipe(uglify())
-        .pipe(prepend(userscriptHeader))
+        .pipe(prepend(readUserscriptHeader()))
         .pipe(gulp.dest('./dist'))
     ;
+});
+
+gulp.task('watch', function() {
+    gulp.watch(['./src/**/*', './test/**/*', './package.json'], ['build']);
 });
