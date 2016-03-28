@@ -4,6 +4,7 @@ var path = require('path');
 var mocha = require('gulp-mocha');
 var eslint = require('gulp-eslint');
 var prepend = require('gulp-insert').prepend;
+var uglify = require('gulp-uglify');
 var webpack = require('webpack-stream');
 var webpackConfig = require('./webpack.config.js');
 
@@ -35,6 +36,7 @@ gulp.task('build', function() {
 
     return gulp.src(['./src/index.js'])
         .pipe(webpack(webpackConfig))
+        .pipe(uglify())
         .pipe(prepend(userscriptHeader))
         .pipe(gulp.dest('./dist'))
     ;
