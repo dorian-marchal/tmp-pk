@@ -1,5 +1,5 @@
 {
-  "name": "Tmp-PK",
+  "name": "tmp-pk",
   "version": "0.1.0",
   "description": "",
   "scripts": {
@@ -24,9 +24,21 @@
     "lodash": "^4.6.1",
     "should": "^8.2.2",
     "userscript-css-loader": "^0.1.0",
+    "userscript-header": "^0.2.0",
     "webpack-stream": "^3.1.0"
   },
   "dependencies": {
     "array-shuffle": "^1.0.0"
+  },
+  "userscript": {
+    "name": "Tmp PK",
+    "description": "tmp-pk",
+    "author": "Spixel_",
+    "namespace": "http://www.spawnkill.fr",
+    "match": "*://*.jeuxvideo.com/*",
+    "grant": [
+      "GM_addStyle"
+    ],
+    "run-at": "document-start"
   }
 }

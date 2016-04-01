@@ -1,7 +1,6 @@
 /* eslint-disable no-sync */
 
 var eslint = require('gulp-eslint');
-var fs = require('fs');
 var gulp = require('gulp');
 var mocha = require('gulp-mocha');
 var path = require('path');
@@ -9,11 +8,9 @@ var prepend = require('gulp-insert').prepend;
 var uglify = require('gulp-uglify');
 var webpack = require('webpack-stream');
 var webpackConfig = require('./webpack.config.js');
+var UserscriptHeader = require('userscript-header');
 
-function readUserscriptHeader() {
-    var userscriptHeaderPath = path.join(__dirname, 'src', 'userscript', 'header.js');
-    return fs.readFileSync(userscriptHeaderPath, 'utf8');
-}
+var packagePath = path.join('.', 'package.json');
 
 gulp.task('lint', function() {
     return gulp.src(['./*.js', './src/**/*.js', './test/**/*.js'])
@@ -38,7 +35,7 @@ gulp.task('build', function() {
     return gulp.src(['./src/index.js'])
         .pipe(webpack(webpackConfig))
         .pipe(uglify())
-        .pipe(prepend(readUserscriptHeader()))
+        .pipe(prepend(UserscriptHeader.fromPackage(packagePath).toString()))
         .pipe(gulp.dest('./dist'))
     ;
 });
