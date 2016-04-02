@@ -1,9 +1,11 @@
 /* eslint-disable no-sync */
 
+var argv = require('yargs').argv;
 var eslint = require('gulp-eslint');
 var exec = require('child_process').exec;
 var fs = require('fs');
 var gulp = require('gulp');
+var gulpif = require('gulp-if');
 var mocha = require('gulp-mocha');
 var os = require('os');
 var path = require('path');
@@ -34,10 +36,13 @@ gulp.task('test', function() {
     ;
 });
 
+/**
+ * Build userscript file. Run it with --dev option to prevent minification.
+ */
 gulp.task('build', function() {
     return gulp.src(['./src/index.js'])
         .pipe(webpack(webpackConfig))
-        .pipe(uglify())
+        .pipe(gulpif(!argv.dev, (uglify())))
         .pipe(prepend(UserscriptHeader.fromPackage(packagePath).toString()))
         .pipe(gulp.dest('./dist'))
     ;
