@@ -55,10 +55,11 @@ gulp.task('watch', function() {
  *
  * Prérequis :
  * -----------
- * Droits d'écriture sur /tmp
- * Google Chrome installé avec l'extension Tampermonkey
- * Droits d'ouvrir des urls locales à Tampermonkey
- * Possibilité de lancer Chrome via la commande "google-chrome" dans le terminal
+ * - Droits d'écriture sur /tmp
+ * - Google Chrome installé avec l'extension Tampermonkey
+ * - Droits d'ouvrir des urls locales à Tampermonkey
+ * - Possibilité de lancer Chrome via la commande "google-chrome" dans le terminal
+ * - Chrome déjà ouvert (important !)
  */
 gulp.task('dev-on-chrome', function() {
 
