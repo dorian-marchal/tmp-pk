@@ -200,7 +200,6 @@
     "no-constant-condition": 1, // disallow arrow functions where a condition is expected
     "no-dupe-class-members": 1, //disallow duplicate name in class members
     "no-this-before-super": 1, //disallow use of this/super before calling super() in constructors.
-    "object-shorthand": 1, // (see Babel section) require method and property shorthand syntax for object literals
     "prefer-const": 1, //suggest using const declaration for variables that are never modified after declared
     "prefer-spread": 1, //suggest using the spread operator instead of .apply().
     "require-yield": 0, //disallow generator functions that do not have yield

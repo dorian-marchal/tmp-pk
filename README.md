@@ -1,8 +1,8 @@
-# tmp-pk
+# JVC Poképost
 
 # Développement
 
-## Server Installation
+## Server
 
 #### Dependencies
 - php v5.4+
@@ -19,7 +19,7 @@ Run `make test` in the `server` directory.
 #### Linting
 Run `make lint` in the `server` directory.
 
-## Client Installation
+## Client
 
 #### Dependencies
 - node v4+
@@ -29,10 +29,15 @@ __Dev__
 - gulp v3+
 
 #### Installation
-Clone the repo, and execute `npm install` in the `client` directory.
+Clone the repo, move in the `client` driectory and execute `npm install`.
+
+#### Build
+- __Simple build__ : run `gulp build`.
+- __Build on changes__ : run `gulp watch`.
+- __Live dev on Chrome__ : run `gulp dev-on-chrome` or `gulp watch-on-chrome`.
 
 #### Tests
-Run `gulp test` in the `client` directory.
+Run `gulp test`.
 
 #### Linting
-Run `gulp lint` in the `client` directory.
+Run `gulp lint`.

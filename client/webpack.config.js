@@ -4,7 +4,7 @@ module.exports = {
     entry: './src/index.js',
     output: {
         path: path.join(__dirname, 'dist'),
-        filename: 'tmp-pk.user.js',
+        filename: 'jvc-pokepost.user.js',
     },
     module: {
         loaders: [
