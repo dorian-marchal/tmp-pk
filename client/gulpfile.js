@@ -41,7 +41,12 @@ gulp.task('test', function() {
  * Build userscript file. Run it with --dev option to prevent minification.
  */
 gulp.task('build', function() {
-    return gulp.src(['./src/index.js'])
+
+    if (argv.dev) {
+        webpackConfig.entry = './src/index.dev.js';
+    }
+
+    return gulp.src(webpackConfig.entry)
         .pipe(plumber())
         .pipe(webpack(webpackConfig))
         .pipe(gulpif(!argv.dev, (uglify())))
