@@ -9,6 +9,7 @@ var gulpif = require('gulp-if');
 var mocha = require('gulp-mocha');
 var os = require('os');
 var path = require('path');
+var plumber = require('gulp-plumber');
 var prepend = require('gulp-insert').prepend;
 var uglify = require('gulp-uglify');
 var UserscriptHeader = require('userscript-header');
@@ -41,6 +42,7 @@ gulp.task('test', function() {
  */
 gulp.task('build', function() {
     return gulp.src(['./src/index.js'])
+        .pipe(plumber())
         .pipe(webpack(webpackConfig))
         .pipe(gulpif(!argv.dev, (uglify())))
         .pipe(prepend(UserscriptHeader.fromPackage(packagePath).toString()))
