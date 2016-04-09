@@ -1,4 +1,4 @@
-/* eslint-disable no-sync */
+/* eslint-disable no-sync, global-require */
 
 var argv = require('yargs').argv;
 var eslint = require('gulp-eslint');
@@ -40,7 +40,7 @@ gulp.task('test', function() {
 /**
  * Build userscript file. Run it with --dev option to prevent minification.
  */
-gulp.task('build', function() {
+gulp.task('build', ['build-config'], function() {
 
     if (argv.dev) {
         webpackConfig.entry = './src/index.dev.js';
@@ -55,8 +55,29 @@ gulp.task('build', function() {
     ;
 });
 
+/**
+ * Build JSON config file from JS config source.
+ */
+gulp.task('build-config', function() {
+    var configSrcPath = './src/config/pokemon-data.js';
+    var configDestPath = './src/config/pokemon-data.json';
+
+    delete require.cache[require.resolve(configSrcPath)];
+    var config = require(configSrcPath);
+
+    var jsonSpaceIndent = argv.dev ? '    ' : '';
+    var configJson = JSON.stringify(config, null, jsonSpaceIndent);
+
+    fs.writeFileSync(configDestPath, configJson);
+});
+
 gulp.task('watch', function() {
-    gulp.watch(['./src/**/*', './test/**/*', './package.json'], ['build']);
+    gulp.watch([
+        './src/**/*',
+        './test/**/*',
+        './package.json',
+        '!./src/config/pokemon-data.json',
+    ], ['build']);
 });
 
 /*
