@@ -26,6 +26,7 @@ Post.getOnPage = function(postId) {
         post = Post.getFromDomElement(postEl);
     }
     catch (err) {
+        console.log('Post::getOnPage', err.message);
         post = null;
     }
 

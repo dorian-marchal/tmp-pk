@@ -44,6 +44,7 @@ var PageUtil = {
             }
         }
         catch (err) {
+            console.log('PageUtil#getNewlySentPost:', err.message);
             targetedPost = null;
         }
 
@@ -85,6 +86,7 @@ var PageUtil = {
             }
         }
         catch (err) {
+            console.log('PageUtil#getTargetedPost:', err.message);
             targetedPost = null;
         }
 

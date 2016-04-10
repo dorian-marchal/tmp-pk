@@ -8,13 +8,15 @@ Pokepost.prototype = {
     constructor: Pokepost,
 
     init: function() {
+        console.log('Pokepost init...');
+
         // Génère l'éventuelle rencontre sur la page courante.
         var newPost = PageUtil.getNewlySentPost(PokepostConfig.postMaxAgeMs);
 
         if (newPost !== null) {
             var generator = new EncounterGenerator(PokepostConfig.pokemonList, PokepostConfig.globalEncounterRate);
             var encounter = generator.getEncounterForPost(newPost.id);
-            console.log(encounter);
+            console.log('Encounter:', encounter);
         }
     },
 };
