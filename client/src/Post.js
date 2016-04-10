@@ -1,12 +1,13 @@
 /**
- * Représente un post sur les forums de jeuxvideo.com.
+ * Represents a post on jeuxvideo.com forums.
+ * @constructor
  */
 var Post = function() {};
 
 /**
  * @param {int} postId
- * @return {Post|null} Post d'ID passé en paramètre s'il est présent sur la page.
- *         null si le post n'existe pas sur la page
+ * @return {Post|null} The Post if it is presents on the current page.
+ *         null if the post is not found on the page.
  */
 Post.getOnPage = function(postId) {
     var postAnchorId = 'post_' + postId;
@@ -34,8 +35,8 @@ Post.getOnPage = function(postId) {
 };
 
 /**
- * @param {HTMLElement} postEl Element .bloc-message-forum correspondant au post.
- * @return {Post} Post correspondant à un élément.
+ * @param {HTMLElement} postEl .bloc-message-forum element of the post.
+ * @return {Post} Post corresponding to the element.
  */
 Post.getFromDomElement = function(postEl) {
     var post = new Post();
@@ -52,8 +53,8 @@ Post.prototype = {
     constructor: Post,
 
     /**
-     * @return {Date} date du post
-     * @throws {Error} Si le poste n'a pas de date.
+     * @return {Date} Post date
+     * @throws {Error} If the Post has no date.
      */
     getDate: function() {
         if (typeof this.frenchDate === 'undefined') {
@@ -73,7 +74,7 @@ Post.prototype = {
     },
 
     /**
-     * @return {boolean} true si le post est le dernier de la page courante.
+     * @return {boolean} true if the Post is the last one on the current page.
      */
     isLastOnPage: function() {
         return this.el && !this.el.nextElementSibling.classList.contains('bloc-message-forum-anchor');

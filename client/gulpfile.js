@@ -38,7 +38,7 @@ gulp.task('test', function() {
 });
 
 /**
- * Build userscript file. Run it with --dev option to prevent minification.
+ * Builds userscript file. Run it with --dev option to prevent minification.
  */
 gulp.task('build', ['build-config'], function() {
 
@@ -63,7 +63,7 @@ gulp.task('build', ['build-config'], function() {
 });
 
 /**
- * Build JSON config file from JS config source.
+ * Builds JSON config file from JS config source.
  */
 gulp.task('build-config', function() {
     var configSrcPath = './src/config/pokemon-data.js';
@@ -88,31 +88,30 @@ gulp.task('watch', function() {
 });
 
 /*
- * Permet de tester un userscript sans le réinstaller à chaque modification.
- * Génère un userscript vide qui importe le fichier principal de l'userscript
- * courant. De cette façon, le fichier principal n'est pas caché et ses
- * modifications sont prises en compte.
+ * Allows testing without reinstalling the usescript at each change.
+ * Generates an empty userscript importing the main userscript file.
+ * This way, the main file is never cached by the browser.
  *
- * Prérequis :
+ * Requirements :
  * -----------
- * - Droits d'écriture sur /tmp
- * - Google Chrome installé avec l'extension Tampermonkey
- * - Droits d'ouvrir des urls locales à Tampermonkey
- * - Possibilité de lancer Chrome via la commande "google-chrome" dans le terminal
- * - Chrome déjà ouvert (important !)
+ * - Write access on /tmp
+ * - Google Chrome with Tampermonkey extension
+ * - Tampermonkey must have the right to access local files
+ * - Ability to run Google Chrome via the command "google-chrome" in the console
+ * - Chrome must be running when this task starts (important !)
  */
 gulp.task('dev-on-chrome', function() {
 
-    // Charge l'header de l'userscript courant.
+    // Loads the userscript header.
     var userscriptHeader = UserscriptHeader.fromPackage(packagePath);
     var userscriptData = userscriptHeader.getData();
 
-    // Ajoute le fichier principal aux dépendances.
+    // Adds the main userscript file to the userscript header.
     userscriptData.require = userscriptData.require || [];
     userscriptData.require.unshift('file://' + path.join(webpackConfig.output.path, webpackConfig.output.filename));
     userscriptHeader.setData(userscriptData);
 
-    // Crée l'userscript vide dans un fichier temporaire.
+    // Generates an empty userscript in a temporary file.
     var tempDir = 'dev-on-chrome';
     try {
         fs.mkdirSync(path.join(os.tmpdir(), tempDir));
@@ -122,7 +121,7 @@ gulp.task('dev-on-chrome', function() {
     var tempUserscriptPath = path.join(os.tmpdir(), tempDir, webpackConfig.output.filename);
     fs.writeFileSync(tempUserscriptPath, userscriptHeader.toString());
 
-    // Charge l'userscript dans Chrome.
+    // Loads this userscript in Google Chrome.
     exec('google-chrome file://' + tempUserscriptPath);
 });
 

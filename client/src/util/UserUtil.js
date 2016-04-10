@@ -1,10 +1,10 @@
 var UserUtil = {
 
     /**
-     * Retourne l'alias lowercased de l'utilisateur courant.
+     * Returns the lowercased alias of the current user.
      *
-     * @return {string} Alias de l'utilisateur courant.
-     * @throws Error Si l'alias n'a pas pu être récupéré.
+     * @return {string} Current user alias.
+     * @throws Error If the alias can't be found.
      */
     getAlias: function() {
         return document.querySelector('.account-pseudo').textContent.trim().toLowerCase();

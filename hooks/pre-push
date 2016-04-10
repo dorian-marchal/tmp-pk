@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Vérifie que les tests passent.
+# Checks linting and tests for client and server code.
 
 cd server && \
     make test && \

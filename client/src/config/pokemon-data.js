@@ -1,6 +1,6 @@
 /**
- * Configuration générale de Poképost.
- * Cette configuration est compilée vers `./pokemon-data.json` lors du build.
+ * General Pokepost configuration.
+ * This configuration is compiled to `./pokemon-data.json` at build time.
  */
 
 var FrequencyFactor = {
@@ -15,26 +15,26 @@ var FrequencyFactor = {
 module.exports = {
 
     /**
-     * Âge maximum d'un post en millisecondes pour qu'il soit considéré comme
-     * "récent" et donc être éligible pour une rencontre.
+     * Max age in milliseconds for a post to be considered as "new".
+     * Only a new post can be used to generate an encounter.
      * @type {Number}
      */
     postMaxAgeMs: 300000, // 5 * 60 * 1000 = 5 minutes
 
     /**
-     * Probabilité de rencontrer un Pokémon à chaque post
-     * (voir le constructeur d'EncounterGenerator ).
+     * Probability of encountering a Pokémon at each post
+     * (see EncounterGenerator constructor).
      * @type {Number}
      */
     globalEncounterRate: 0.35,
 
     /**
-     * Liste des Pokémon capturables.
-     * @type {object[]} Liste de Pokémon du type : {
-     *     id: Identifiant unique du Pokémon
-     *     name: Nom du Pokémon
-     *     frequencyFactor: Entier positif représentant le coefficient de fréquence
-     *         (voir EncounterGenerator#setPokemonRepartitionList)
+     * Catchable Pokémon list.
+     * @type {object[]} Pokémon list : {
+     *     id: Pokémon unique identifier
+     *     name: Pokémon name
+     *     frequencyFactor: Positive integer
+     *         (see EncounterGenerator#setPokemonRepartitionList)
      * }
      */
     pokemonList: [

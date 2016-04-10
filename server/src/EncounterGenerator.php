@@ -1,13 +1,12 @@
 <?php
 
 /**
- * Permet de générer des rencontres de Pokémon à partir d'ID de posts sur les
- * forums de jeuxvideo.com.
+ * Generates Pokémon encounters based on jeuxvideo.com forum posts.
  */
 class EncounterGenerator {
 
     /**
-     * Écart minimum entre deux ID de post sur un même topic de jeuxvideo.com.
+     * Minimum gap between to post IDs on a jeuxvideo.com topic.
      * @var int
      */
     const MIN_GAP_BETWEEN_POST_IDS = 8;
@@ -16,15 +15,14 @@ class EncounterGenerator {
     private $encounterPossibilities = [];
 
     /**
-     * @var float Probabilité de rencontrer n'importe quel Pokémon à chaque
-     *      post (entre 0 et 1).
+     * @var float Approximate probability of encountering a Pokémon at each post,
+     *      between 0 and 1.
      */
     private $wantedEncounterRate = 1;
 
     /**
-     * @param array pokemonRepartitionList Liste de répartition des Pokémon.
-     *        Voir #setPokemonRepartitionList() pour plus d'informations.
-     * @param float wantedEncounterRate Taux de rencontre global souhaité.
+     * @param array $pokemonRepartitionList See #setPokemonRepartitionList()
+     * @param float $wantedEncounterRate Global wanted encounter rate.
      */
     public function __construct($pokemonRepartitionList, $wantedEncounterRate = 1) {
         $this->setPokemonRepartitionList($pokemonRepartitionList);
@@ -33,18 +31,17 @@ class EncounterGenerator {
     }
 
     /**
-     * Modifie la liste de répartition des Pokémon.
+     * Sets the Pokémon repartition list.
      *
-     * @param array $pokemonRepartitionList Liste des différents Pokémon
-     * rencontrables, de la forme :
+     * @param array $pokemonRepartitionList Encounterable Pokémon list :
      * [
-     *     Object { id: 'Mew', frequencyFactor: 1 }, // coefficient 1, le plus rare
-     *     Object { id: 'Pikachu', frequencyFactor: 4 }, // 4 fois plus fréquent que Mew
-     *     Object { id: 'Rattata', frequencyFactor: 10 }, // 10 fois plus fréquent que Mew
+     *     Object { id: 'Mew', frequencyFactor: 1 }, // factor 1, the rarest
+     *     Object { id: 'Pikachu', frequencyFactor: 4 }, // 4 times more common than Mew
+     *     Object { id: 'Rattata', frequencyFactor: 10 }, // 10 times  more common than Mew
      * ]
-     * Les coefficients doivent être des entiers positifs.
+     * Frequency factors must be positive integers.
      *
-     * @throws \Exception si la liste passée est mal formée.
+     * @throws \Exception If the given list is not well-formed.
      */
     public function setPokemonRepartitionList($pokemonRepartitionList) {
         $this->checkRepartitionList($pokemonRepartitionList);
@@ -52,8 +49,9 @@ class EncounterGenerator {
     }
 
     /**
-     * Vérifie que la répartition passée en paramètre est bien formée.
-     * @throws \Exception
+     * Checks that the Pokémon repartition list is well-formed.
+     * @param array $pokemonRepartitionList To check repartition
+     * @throws \Exception If the given list is not well-formed.
      */
     private function checkRepartitionList($pokemonRepartitionList) {
         if (!is_array($pokemonRepartitionList)) {
@@ -72,42 +70,41 @@ class EncounterGenerator {
     }
 
     /**
-     * Set le taux de rencontre global. Le taux passé est contraint sur [0, 1], il
-     * représente la probabilité de rencontrer un Pokémon (quel qu'il soit) à chaque
+     * Sets the global encounter rate. The given rate is constrained on [0, 1].
+     * It represents the probability of encountering a Pokémon (of any kind) at each
      * post.
-     * Ce taux est approximatif. Pour obtenir le taux de rencontre effectif, il
-     * faut appeler la méthode #getActualEncounterRate().
-     * @param int $wantedEncounterRate
+     * This rate is approximate. To get the actual rate, #getActualEncounterRate()
+     * can be called.
+     * @param int $wantedEncounterRate Wanted global encounter rate.
      */
     public function setWantedEncounterRate($wantedEncounterRate) {
         $this->wantedEncounterRate = max(min($wantedEncounterRate, 1), 0);
     }
 
     /**
-     * @return float
+     * @return float Wanted global encounter rate.
      */
     public function getWantedEncounterRate() {
         return $this->wantedEncounterRate;
     }
 
     /**
-     * @return float Taux de rencontre global réel.
+     * @return float Actual global encounter rate.
      */
     public function getActualEncounterRate() {
         return $this->getPokemonCount() / count($this->encounterPossibilities);
     }
 
     /**
-     * Met à jour les données du générateur en fonction des attributs courants.
-     * Cette méthode doit être appelée après la modification d'un attribut
-     * pour que celui-ci soit pris en compte.
+     * Updates the generator data with the current attributes.
+     * This method must be called after changing an attribute for it to take effect.
      */
     public function update() {
         $this->generateEncounterPossibilities();
     }
 
     /**
-     * Génère la liste des rencontres potentielles.
+     * Generates the list of potential Pokémon encounters.
      */
     private function generateEncounterPossibilities() {
         $this->encounterPossibilities = [];
@@ -122,26 +119,25 @@ class EncounterGenerator {
             }
         }
 
-        // Ajoute des éléments null à la liste de rencontre pour réduire le
-        // taux de rencontre à $wantedEncounterRate.
+        // Adds null elements to the encounter list to reduce the encounter rate
+        // down to `wantedEncounterRate`.
         $this->encounterPossibilities = array_pad($this->encounterPossibilities,
             (int) (count($this->encounterPossibilities) / $this->wantedEncounterRate), null);
 
-        // Mélange le tableau de rencontres pour éviter les cycles de rencontre
-        // trop visibles.
+        // Shuffles the encounter list to avoid obvious encounter cycles.
         shuffle($this->encounterPossibilities);
     }
 
     /**
-     * Retourne le Pokémon rencontré pour un ID de post particulier.
-     * @param int postId ID du post
-     * @return string ID du Pokémon rencontré ou null s'il n'y a pas de
-     *         rencontre pour cet ID.
+     * Returns the encountered Pokémon ID for a particular post ID.
+     * @param int $postId
+     * @return string Encountered Pokémon ID or null if there is no encounter for
+     *         this post ID.
      */
     public function getEncounterForPost($postId) {
-        // On divise l'ID du post par MIN_GAP_BETWEEN_POST_IDS pour résoudre les
-        // problèmes liés au fait que l'écart minimum entre deux ID de message
-        // d'un même topic n'est pas de 1 sur les forums de jeuxvideo.com.
+        // Divides the post ID by MIN_GAP_BETWEEN_POST_IDS to solve problems related
+        // to the fact that the minimum gap between two post ID on a single topic
+        // is not 1 on jeuxvideo.com forums.
         $dividedId = floor($postId / self::MIN_GAP_BETWEEN_POST_IDS);
         $encounterIndex = $dividedId % count($this->encounterPossibilities);
 
@@ -149,11 +145,11 @@ class EncounterGenerator {
     }
 
     /**
-     * Retourne le taux de rencontre du Pokémon d'id passé en paramètre.
+     * Returns the encounter rate of a Pokémon.
      *
-     * @param string $pokemonId
-     * @return float Probabilité de rencontrer le Pokémon d'ID passé en paramètre
-     *         À chaque post, entre 0 et 1.
+     * @param string $pokemonId Pokémon ID
+     * @return float Probability of encountering the Pokémon at each post,
+     *         between 0 and 1.
      */
     public function getPokemonEncounterRate($pokemonId) {
         $pokemonRatio = $this->getPokemonRatio($pokemonId);
@@ -161,19 +157,17 @@ class EncounterGenerator {
     }
 
     /**
-     * Retourne le nombre de posts consécutifs minimum pour que tous les
-     * Pokémon soient rencontrés au moins une fois.
-     * @return int
+     * @return int Minimum number of consecutive posts to ensure that all the
+     *         Pokémon have been encountered at least one time.
      */
     public function getCycleLength() {
         return count($this->encounterPossibilities) * self::MIN_GAP_BETWEEN_POST_IDS;
     }
 
     /**
-     * Retourne la proportion du Pokémon d'ID passé en paramètre par rapport
-     * à la masse totale de tous les Pokémon.
      * @param string $pokemonId
-     * @return float
+     * @return float Ratio of the Pokémon compared to the total mass of all the
+     *         Pokémon.
      */
     public function getPokemonRatio($pokemonId) {
         $pokemonCount = $this->getPokemonCount();
@@ -186,16 +180,14 @@ class EncounterGenerator {
     }
 
     /**
-     * @return int Retourne le nombre total de Pokémon dans la liste des
-     * possibilités de rencontre.
+     * @return int Returns the total Pokémon count in the encounter possibility list.
      */
     private function getPokemonCount() {
         return count(array_filter($this->encounterPossibilities));
     }
 
     /**
-     * @return int Nombre d'occurences d'un Pokémon dans la liste des rencontres
-     * potentielles.
+     * @return int Number of occurences of the Pokémon in the encounter possibility list.
      */
     private function getNumberOfOccurences($pokemonId) {
         $countOccurences = function ($occurences, $currentId) use ($pokemonId) {

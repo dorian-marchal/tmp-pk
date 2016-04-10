@@ -2,6 +2,7 @@ var EncounterGenerator = require('./EncounterGenerator');
 var PageUtil = require('./util/PageUtil');
 var PokepostConfig = require('./config/pokemon-data.json');
 
+/** @constructor */
 var Pokepost = function() {};
 
 Pokepost.prototype = {
@@ -10,7 +11,7 @@ Pokepost.prototype = {
     init: function() {
         console.log('Pokepost init...');
 
-        // Génère l'éventuelle rencontre sur la page courante.
+        // Generates the new post encounter.
         var newPost = PageUtil.getNewlySentPost(PokepostConfig.postMaxAgeMs);
 
         if (newPost !== null) {

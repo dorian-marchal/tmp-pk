@@ -1,8 +1,8 @@
-// Expose certains modules pour faciliter les tests.
+// Expose some modules to ease development.
 window.Post = require('./Post');
 window.PageUtil = require('./util/PageUtil');
 window.UserUtil = require('./util/UserUtil');
 window.Pokepost = require('./Pokepost');
 
-// Charge le fichier principal.
+// Load the main file.
 require('./index.js');

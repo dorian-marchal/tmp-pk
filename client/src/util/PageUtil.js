@@ -4,18 +4,18 @@ var UserUtil = require('./UserUtil');
 var PageUtil = {
 
     /**
-     * Retourne le Post qui vient d'être posté par l'utilisateur courant.
+     * Returns the newly sent post of the current user.
      *
-     * Un post est retourné si :
-     * - Le post est le dernier de la page
-     * - L'ancre vers ce post est présente dans l'URL
-     * - L'auteur du post est l'utilisateur courant
-     * - Le post a été posté récemment
+     * A post is returned if :
+     * - It is the last one on the page
+     * - Its anchor is present in the URL
+     * - Its author is the current user
+     * - It is "new"
      *
-     * @param {int} postMaxAgeMs Age à partir duquel un post n'est plus
-     *        considéré comme "récent".
-     * @return {Post|null} dernier post de la page,
-     *         null s'il n'y a pas de nouveau post valable sur la page.
+     * @param {int} postMaxAgeMs Max age in milliseconds for a post to be
+     *        considered as "new".
+     * @return {Post|null} Newly sent post on the page.
+     *         null if there is no valid newly sent post on the page.
      */
     getNewlySentPost: function(postMaxAgeMs) {
         var targetedPost;
@@ -52,7 +52,8 @@ var PageUtil = {
     },
 
     /**
-     * @return {int|null} ID de l'éventuel post ciblé dans l'URL (ancre).
+     * @return {int|null} ID of the targeted post in the URL (anchor)
+     *         or null if there is no targeted post.
      */
     _getTargetedPostId: function() {
         // https://regex101.com/r/gW0pX7/1
@@ -66,8 +67,8 @@ var PageUtil = {
     },
 
     /**
-     * @return {Post|null} Post ciblé dans l'URL (ancre) ou null si pas de post
-     *         ciblé trouvé.
+     * @return {Post|null} Post targeted in the URL (anchor) or null if no
+     *         targeted post is found.
      */
     getTargetedPost: function() {
 
@@ -94,14 +95,14 @@ var PageUtil = {
     },
 
     /**
-     * @return {boolean} true si l'utilisateur est sur un topic
+     * @return {boolean} true if the user is on a topic page.
      */
     inTopic: function() {
         return location.pathname.match(/forums\/(1|42)/);
     },
 
     /**
-     * @return {boolean} true si la page courante est la dernière du topic.
+     * @return {boolean} true if the current page is the last one of a topic.
      */
     onLastTopicPage: function() {
         return PageUtil.inTopic() && document.querySelector('.pagi-fin-actif') === null;
