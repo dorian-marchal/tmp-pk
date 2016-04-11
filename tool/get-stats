@@ -39,9 +39,9 @@ function getPokemonData(pokemonId) {
 }
 
 function toPercent(rate) {
-    var factorForRound = 10000;
     var percentFactor = 100;
-    return Math.round(rate * factorForRound) * percentFactor / factorForRound + '%';
+    var significativeNumbers = 2;
+    return (rate * percentFactor).toPrecision(significativeNumbers) + '%';
 }
 
 try {
