@@ -93,7 +93,6 @@ gulp.task('watch', function() {
  * This way, the main file is never cached by the browser.
  *
  * Requirements :
- * -----------
  * - Write access on /tmp
  * - Google Chrome with Tampermonkey extension
  * - Tampermonkey must have the right to access local files
