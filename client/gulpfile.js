@@ -88,7 +88,7 @@ gulp.task('watch', function() {
 });
 
 /*
- * Allows testing without reinstalling the usescript at each change.
+ * Allows testing without reinstalling the userscript at each change.
  * Generates an empty userscript importing the main userscript file.
  * This way, the main file is never cached by the browser.
  *

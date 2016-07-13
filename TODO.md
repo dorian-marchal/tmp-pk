@@ -57,6 +57,7 @@
 - [ ] Authentification
 - [ ] Pokédex voir le pokédex d'un utilisateur dans son profil (icône pokédex)
 - [ ] Monitoring côté serveur
+- [ ] Rate limiting sur le nombre de rencontres
 
 #v0.3
 - [ ] Autoriser plusieurs captures
@@ -86,6 +87,7 @@
 ### Tech
 - Plusieurs modules -> Gulp + Webpack
 - Documentation des hooks
+- Attention à limiter le nombre de requêtes parallèles à jeuxvideo.com
 
 ### Authentification
 - Pokéball en bas à droite (noir et blanc quand pas connecté)
@@ -103,15 +105,6 @@
 ### Stockage
 - Modèle de données (rencontres, captures, ...)
 
-### Pokédex
-- Onglet dans le profil accessible depuis en haut à droite
-- Compteur de Pokémon directement sur le pokédex
-- Liste des Pokémon capturés et manquants
-- Compteur pour chaques Pokémon
-- Voir le pokédex des autres utilisateurs
-    - Compteur sur chaque utilisateur
-    - cache client ?
-- Utiliser les images d'un site externe (les stocker dans le dépôt ? Vérifier l'aspect légal)
 
 ### Echanges
 - Par MP -> Demande d'échange -> acceptation
@@ -120,35 +113,28 @@
 - Possibilité de bloquer les échanges pour éviter les abus ?
 
 ### Rencontre
-- Prérequis :
-    - Détecter que l'on est sur un topic
-    - Détecter que c'est un nouveau post
-- Définir un taux de rencontre pour chaque Pokémon
-- À chaque nouveau post, l'id du post détermine si une rencontre a lieu (1)
-- Si une rencontre a lieu, le permalien du post est envoyé au serveur du script
-- Vérifier :
-    - que l'id du post correspond au taux de rencontre choisi
+- Seulement sur les nouveaux posts (dépend de l'ID du post)
+- Dépend du taux de rencontre du Pokémon
+
+- Si une rencontre a lieu, l'ID du post est envoyé au serveur du script
+- Vérifier (via le permalien) :
+    - que l'id du post correspond à la rencontre
     - que le post appartient bien à l'utilisateur qui l'a envoyé,
-    - qu'il a été posté récemment (pour éviter l'utilisation des vieux posts supérieur à 2 minutes),
+    - qu'il a été posté récemment (cf configuration pour "récemment"),
     - que le post n'a pas déjà été utilisé pour une rencontre
-    - que le nombre de dernières rencontres ne dépassent pas le max autorisé (x par heure ?)
-- Si tout est bon, on marque le post comme "utilisé" en base
+    - que le nombre de dernières rencontres ne dépasse pas le max autorisé (x par heure ?)
+- Si tout est bon, on marque le post comme "utilisé"
 - On tente une capture (Voir section du dessous)
+
 - Pouvoir exporter un tableau de rencontres potentielles pour l'enregistrer en JSON puis l'importer
     - Le mettre dans un Objet JSON serializable
-- Attention à limiter le nombre de requêtes parallèles à jeuxvideo.com
+
+__Design__
+- Petite herbe animée dans un coin du post -> clic = tentative de capture
+    - Disparait au bout de la durée impartie
 
 ### Capture
-- Objet "Pokémon" contenant le taux de rencontre et de capture ?
-- Vérifier la rencontre côté serveur
-    - Choisir une URL légère à récupérer.
-    - Si la rencontre n'est pas bonne, ne pas capturer
-- Taux de capture pour les différents Pokémon
-    - Fixe + variable, du type `min(1, 0.4 + (0.06 * frequencyFactor))``
-      frequencyFactor:1 -> 0.46
-      frequencyFactor:4 -> 0.64
-      frequencyFactor:8 -> 0.88
-      frequencyFactor:12 -> 1
+- Dépend du taux de capture du Pokémon
 - Coût des pokéballs pour éviter des Pokémon faciles à capturer
 - Random côté serveur
 
@@ -161,6 +147,28 @@ __Idées__
 - Animation de capture (réussite / échec)
 - Musique lors de la réussite ou de l'échec
 - Taux de capture en fonction du texte dans le message ?
+
+### Pokédex
+- Onglet dans le profil accessible depuis en haut à droite
+- Compteur de Pokémon directement sur le pokédex
+- Liste des Pokémon capturés et manquants
+- Compteur pour chaques Pokémon
+- Voir le pokédex des autres utilisateurs
+    - Compteur sur chaque utilisateur
+    - cache client ?
+- Utiliser les images d'un site externe (les stocker dans le dépôt ? Vérifier l'aspect légal)
+
+### Rencontre -> Capture -> Pokédex
+
+Nouveau post
+    EncounterGenerator -> Génération d'une rencontre
+    Pokepost -> Affichage d'un indicateur sur le post
+    Pokepost -> Au clic sur le post -> Tentative de capture
+    ? -> Vérification d'utilisation du post
+    CaptureGenerator? -> Capture
+    Pokepost -> animation en fonction du résultat
+    ? -> Stockage du post comme utilisé
+
 
 ### Evolution
 - Choisir une équipe qui gagnera de l'XP
@@ -188,3 +196,8 @@ __Idées__
 - Ajouter plus de Pokémon (151, dans la première version)
 - Intégration dans SpawnKill ? Pub dans le topic ? Pub dans la signature ? o/
 - Version JVForum
+
+## Idées issues de Pokémon Go
+- bonbons pour les évolutions
+- Escape rate
+- Plusieurs tentatives de Pokéball

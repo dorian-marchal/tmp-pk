@@ -13,11 +13,11 @@ var FrequencyFactor = {
 };
 
 var CaptureRate = {
-    VeryEasy: 0.9,
-    Easy: 0.8,
-    Medium: 0.7,
-    Hard: 0.6,
-    VeryHard: 0.5,
+    VeryEasy: 0.99,
+    Easy: 0.98,
+    Medium: 0.95,
+    Hard: 0.93,
+    VeryHard: 0.9,
 };
 
 module.exports = {
